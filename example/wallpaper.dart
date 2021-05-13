@@ -9,9 +9,7 @@ import 'dart:ffi';
 import 'package:ffi/ffi.dart';
 import 'package:win32/win32.dart';
 
-late DesktopWallpaper wallpaper;
-
-void printWallpaper() {
+void printWallpaper(IDesktopWallpaper wallpaper) {
   final pathPtr = calloc<Pointer<Utf16>>();
 
   try {
@@ -37,21 +35,20 @@ void printWallpaper() {
   }
 }
 
-void printBackgroundColor() {
-  final colorPtr = calloc<COLORREF>();
+IDesktopWallpaper createObject() {
+  final ptr = calloc<COMObject>();
+  final clsid = calloc<GUID>()..ref.setGUID(CLSID_DesktopWallpaper);
+  final iid = calloc<GUID>()..ref.setGUID(IID_IDesktopWallpaper);
 
   try {
-    final hr = wallpaper.GetBackgroundColor(colorPtr);
+    final hr = CoCreateInstance(clsid, nullptr, CLSCTX_ALL, iid, ptr.cast());
 
-    if (SUCCEEDED(hr)) {
-      final color = colorPtr.value;
-      print('Background color is: RGB(${GetRValue(color)}, '
-          '${GetGValue(color)}, ${GetBValue(color)})');
-    } else {
-      throw WindowsException(hr);
-    }
+    if (FAILED(hr)) throw WindowsException(hr);
+
+    return IDesktopWallpaper(ptr);
   } finally {
-    free(colorPtr);
+    free(clsid);
+    free(iid);
   }
 }
 
@@ -63,11 +60,10 @@ void main() {
     throw WindowsException(hr);
   }
 
-  wallpaper = DesktopWallpaper.createInstance();
+  final wallpaper = createObject();
 
   try {
-    printWallpaper();
-    printBackgroundColor();
+    printWallpaper(wallpaper);
   } finally {
     free(wallpaper.ptr);
     CoUninitialize();

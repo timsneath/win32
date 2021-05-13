@@ -49,5 +49,5 @@
     "dart.analysisExcludedFolders": [
         "example/explorer"
     ],
-    "dart.sdkPath": "c:\\flutter\\bin\\cache\\dart-sdk",
+    "dart.sdkPath": "c:\\tools\\dart-sdk",
 }
