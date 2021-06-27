@@ -17,6 +17,8 @@ import 'projection/classprojector.dart';
 import 'projection/typeprinter.dart';
 
 final typesToGenerate = [
+  'Windows.Foundation.Collections.IIterable`1',
+  'Windows.Foundation.Collections.IVectorView`1',
   'Windows.Foundation.IPropertyValue',
   'Windows.Foundation.IAsyncAction',
   'Windows.Foundation.IAsyncInfo',
